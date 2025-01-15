@@ -1,0 +1,19 @@
+# MacOS
+**/.DS_Store
+
+# editors
+*.swp
+*~
+
+# build
+/build*/
+test/build
+test/artifacts
+
+# embedops
+/artifacts*/
+embedops.log
+build.log
+
+# provisioning
+embedops-gateway-image.img

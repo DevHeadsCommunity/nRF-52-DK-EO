@@ -1,77 +1,71 @@
-/** main.c - Application main entry point
- *
- * Copyright 2023 Dojo Five
- **/
-
-#include <zephyr/types.h>
-#include <stddef.h>
-#include <string.h>
-#include <zephyr/sys/printk.h>
-#include <zephyr/kernel.h>
-#include <zephyr/logging/log.h>
-#include <zephyr/settings/settings.h>
-#include <dk_buttons_and_leds.h>
-#include "app_version.h"
-
 #include "ble.h"
-#include "serial.h"
+#include "bme280.h"
 
-#define LOG_MODULE_NAME EO_HIL_MAIN
-LOG_MODULE_REGISTER(LOG_MODULE_NAME);
+#include <stdbool.h>
+#include <stdio.h>
 
-// Uncomment the following line to enable LED3 on the nRF53DK
-// #define ENABLE_LED3
+#include <zephyr/drivers/gpio.h>
+#include <zephyr/kernel.h>
 
-#define LED_PERIOD_MS 1000
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(nrf52dk_eo);
 
-int main(void)
-{
-    bool heartbeat_led_state = false;
-    bool bt_led_state = false;
+#define SLEEP_TIME_MS 1000
 
-    if(dk_leds_init())
-    {
-        LOG_ERR("DK LEDs failed to init\n");
-        return 0;
-    }
+#define LED0_NODE DT_ALIAS(led0)
 
-#ifdef ENABLE_LED3
-    dk_set_led(DK_LED3, 1);
-#endif
+static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
 
-    /* Set the DIS FW Version from the Zephyr application version system */
-    char app_version_str[64];
-    sprintf(app_version_str, "%d.%d", APP_VERSION_MAJOR, APP_VERSION_MINOR);
-    settings_runtime_set("bt/dis/fw",
-                 app_version_str,
-                 strlen(app_version_str));
+static int led_initialize(void) {
+  int ret;
 
-    if(!ble_init())
-    {
-        LOG_ERR("BLE failed to init\n");
-        return 0;
-    }
+  if (!gpio_is_ready_dt(&led)) {
+    return -1;
+  }
 
-    while(true)
-    {
-        dk_set_led(DK_LED1, heartbeat_led_state);
-        heartbeat_led_state = !heartbeat_led_state;
+  ret = gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE);
+  if (ret < 0) {
+    return -1;
+  }
 
-        if(!ble_is_connected())
-        {
-            dk_set_led(DK_LED2, heartbeat_led_state);
-            bt_led_state = !bt_led_state;
-        }
-        else
-        {
-            dk_set_led(DK_LED2, true);
-        }
-
-        k_msleep(LED_PERIOD_MS);
-    }
+  return 0;
 }
 
-#define STACKSIZE 2048
-#define PRIORITY 7
-K_THREAD_DEFINE(ble_write_thread_id, STACKSIZE, ble_write_thread, NULL, NULL, NULL, PRIORITY, 0, 0);
-K_THREAD_DEFINE(serial_echo_thread_id, STACKSIZE, serial_echo_thread, NULL, NULL, NULL, PRIORITY, 0, 0);
+static void led_toggle(void) {
+  int ret;
+
+  ret = gpio_pin_toggle_dt(&led);
+  if (ret < 0) {
+    LOG_ERR("failed to toggle led %d", ret);
+  }
+}
+
+int main(void) {
+  int ret;
+
+  ret = led_initialize();
+  if (ret < 0) {
+    LOG_ERR("failed to initialize led");
+    return 0;
+  }
+
+  ret = bme280_initialize_device();
+  if (ret < 0) {
+    LOG_ERR("bme280 failed to initialize");
+    return 0;
+  }
+
+  ret = ble_initialize();
+  if (ret < 0) {
+    LOG_ERR("ble failed to initialize");
+    return 0;
+  }
+
+  while (1) {
+    led_toggle();
+    ble_update_indication();
+    k_msleep(SLEEP_TIME_MS);
+  }
+
+  return 0;
+}

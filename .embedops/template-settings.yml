@@ -1,0 +1,4 @@
+build_command: west build -b nrf52dk/nrf52832 -p
+devcontainer: ubuntu
+pipeline_provider: gitlab
+target_platform: D5_NRF5340_HIL_KIT

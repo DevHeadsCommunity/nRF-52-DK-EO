@@ -24,7 +24,7 @@ static int led_initialize(void) {
   }
 
   ret = gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE);
-  if (ret < 0) {
+  if (ret != 0) {
     return -1;
   }
 
@@ -37,6 +37,17 @@ static void led_toggle(void) {
   ret = gpio_pin_toggle_dt(&led);
   if (ret < 0) {
     LOG_ERR("failed to toggle led %d", ret);
+  }
+}
+
+static void led_status(int err) {
+  int i;
+
+  if (err) {
+    for (i = 0; i < 3; ++i) { // three blinks for an err
+      led_toggle();
+      k_msleep(SLEEP_TIME_MS);
+    }
   }
 }
 
@@ -62,8 +73,8 @@ int main(void) {
   }
 
   while (1) {
-    led_toggle();
-    ble_update_indication();
+    led_status(ret);
+    ret = ble_update_indication();
     k_msleep(SLEEP_TIME_MS);
   }
 

@@ -189,9 +189,10 @@ struct bt_nus_cb nus_listener = {
     .received = nus_received,
 };
 
-void ble_update_indication(void) {
+int ble_update_indication(void) {
   int ret;
 
+  ret = 0;
   if (sensor_values_updated() && indicate == 0) {
     indicate_params.attr = &service.attrs[2];
     indicate_params.func = indicate_cb;
@@ -204,6 +205,7 @@ void ble_update_indication(void) {
       LOG_ERR("indicate failed %d", ret);
     }
   }
+  return ret;
 }
 
 int ble_initialize(void) {

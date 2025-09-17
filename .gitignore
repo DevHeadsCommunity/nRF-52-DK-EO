@@ -27,3 +27,13 @@ modules
 tools
 bootloader
 *.cmake
+
+#EmbedOps
+hil
+Kconfig
+manifest-repo
+CMakeFiles
+.github
+.devcontainer
+ci
+CMakeCache.txt

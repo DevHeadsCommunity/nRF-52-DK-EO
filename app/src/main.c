@@ -74,9 +74,8 @@ int main(void) {
 
   while (1) {
     led_status(ret);
-    ble_update_indication();
+    ble_notify();
     k_msleep(SLEEP_TIME_MS);
   }
-
   return 0;
 }

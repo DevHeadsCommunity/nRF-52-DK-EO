@@ -133,14 +133,6 @@ static void bt_ready(int err)
   LOG_INF("advertising started");
 }
 
-static void notify_cb(struct bt_conn *conn,
-                      void *user_data)
-{
-  ARG_UNUSED(user_data);
-  ARG_UNUSED(conn);
-  LOG_INF("Notification Completed.");
-}
-
 static void connected(struct bt_conn *conn, uint8_t err)
 {
   char addr[BT_ADDR_LE_STR_LEN];
@@ -219,7 +211,7 @@ int nus_tx_notify(struct bt_conn *conn, const void *data, uint16_t len)
   return bt_gatt_notify(conn, tx_attr, data, len);
 }
 
-int ble_update_indication(void)
+int ble_notify(void)
 {
   int ret;
 
@@ -231,7 +223,7 @@ int ble_update_indication(void)
     ret = bt_gatt_notify(NULL, service_attr, sensor_values, sizeof(sensor_values));
     if (ret != 0)
     {
-      LOG_ERR("indicate failed %d", ret);
+      LOG_ERR("notify failed %d", ret);
     }
   }
   return ret;
@@ -256,12 +248,4 @@ int ble_initialize(void)
   }
 
   return 0;
-}
-
-void send_bme280(void)
-{
-  char buf[32];
-  int16_t t = bme280_get_temperature();
-  snprintk(buf, sizeof(buf), "T=%d.%02d\n", t / 100, t % 100);
-  bt_nus_send(NULL, buf, strlen(buf));
 }

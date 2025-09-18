@@ -2,6 +2,5 @@
 #define _BLE_H_
 
 int ble_initialize(void);
-int ble_notify(void);
-
+int ble_update_indication(void);
 #endif

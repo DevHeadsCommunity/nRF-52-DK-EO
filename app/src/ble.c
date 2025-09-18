@@ -219,7 +219,7 @@ int nus_tx_notify(struct bt_conn *conn, const void *data, uint16_t len)
   return bt_gatt_notify(conn, tx_attr, data, len);
 }
 
-int ble_notify(void)
+int ble_update_indication(void)
 {
   int ret;
 
@@ -243,8 +243,7 @@ int ble_initialize(void)
 
   ret = bt_nus_cb_register(&nus_listener, NULL);
   LOG_INF("bt_nus_cb_register: %d", ret);
-  if (ret)
-  {
+  if (ret) {
     LOG_ERR("failed to register NUS callback: %d", ret);
     return -1;
   }

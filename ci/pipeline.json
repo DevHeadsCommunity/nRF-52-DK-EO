@@ -1,0 +1,8 @@
+{
+	"steps": [
+		"echo 'Starting pipeline...'",
+		"ci/zephyr.sh",
+		"ci/arm-none-gcc-build.sh",
+		"ci/hil.sh"
+	]
+}

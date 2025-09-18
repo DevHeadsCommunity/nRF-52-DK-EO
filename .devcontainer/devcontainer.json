@@ -1,0 +1,55 @@
+{
+	"dockerFile": "Dockerfile",
+	"features": {
+		"ghcr.io/devcontainers/features/git":               {},
+		"ghcr.io/dojofive/embedops-features/eo:latest":     {},
+		"ghcr.io/eitsupi/devcontainer-features/jq-likes:2": {},
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"upgradePackages":      "false",
+			"installZsh":           "false",
+			"installOhMyZsh":       "false",
+			"installOhMyZshConfig": "false",
+			"username":             "${localEnv:USER}",
+			"userUid":              "automatic",
+			"userGid":              "automatic",
+		},
+		"ghcr.io/dojofive/embedops-features/zephyr-dev:latest":            {},
+		"ghcr.io/dojofive/embedops-features/arm-none-eabi-gcc-dev:latest": {},
+	},
+	"remoteUser": "${localEnv:USER}",
+	"mounts": [
+		{
+			"type":   "bind",
+			"source": "${localEnv:HOME}/.embedops",
+			"target": "/root/.embedops",
+		},
+	],
+	"initializeCommand": "mkdir -p ~/.embedops",
+	"customizations": {
+		"vscode": {
+			"settings": {
+				// STM32
+				"remote.extensionKind": {
+					"stmicroelectronics.stm32-vscode-extension": [
+						"workspace",
+					],
+				},
+			},
+			"extensions": [
+				// STM32
+				// "ms-vscode.cpptools",
+				// "ms-vscode.cpptools-extension-pack",
+				// "ms-vscode.cpptools-themes",
+				// "stmicroelectronics.stm32-vscode-extension",
+				// "bmd.stm32-for-vscode",
+				// Nordic
+				// "nordic-semiconductor.nrf-connect-extension-pack",
+				// Common
+				// "mcu-debug.debug-tracker-vscode",
+				// "marus25.cortex-debug",
+				"ms-vscode.vscode-serial-monitor",
+			],
+		},
+	},
+	"image": "ubuntu:24.04",
+}

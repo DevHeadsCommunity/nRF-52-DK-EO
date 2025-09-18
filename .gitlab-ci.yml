@@ -1,0 +1,17 @@
+default:
+  image: ubuntu
+
+stages:
+  - build
+  - test
+  - analyze
+  - hil
+  - release
+
+include:
+  - 'ci/**.gitlab.yml'
+
+init:
+  stage: build
+  script:
+    - echo "Starting build..."

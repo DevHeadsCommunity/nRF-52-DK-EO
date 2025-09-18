@@ -1,0 +1,4 @@
+hil_root: hil
+hil_extras:
+  - name: build/zephyr/merged_domains.hex
+    external_module: false

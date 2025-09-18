@@ -1,0 +1,19 @@
+# These are the third-party packages used by all HIL SDK modules
+bleak==0.22.3
+cbor2
+pyserial
+RPi.GPIO
+
+# packages for pyvisa support
+pyusb
+psutil
+zeroconf
+pyvisa
+pyvisa-py
+
+# packages for scp support
+paramiko
+scp
+
+# packages for openvpn support
+cryptography

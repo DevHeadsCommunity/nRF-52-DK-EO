@@ -11,3 +11,5 @@ set(CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../zephyr)
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(app C)
 target_sources(app PRIVATE ${app_sources})
+
+set(BOARD nrf52dk_nrf52832 CACHE STRING "Board to build for")

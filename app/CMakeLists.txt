@@ -4,12 +4,13 @@ set(KCONFIG_ERROR_ON_WARNINGS OFF)
 
 FILE(GLOB app_sources src/*.c)
 
-
-set(BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR}) 
+set(BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../zephyr)
 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(app C)
 target_sources(app PRIVATE ${app_sources})
+
+# add_subdirectory(tests)
 
 set(BOARD nrf52dk_nrf52832 CACHE STRING "Board to build for")

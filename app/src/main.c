@@ -1,5 +1,5 @@
 #include "ble.h"
-#include "bme280.h"
+#include "sensors.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -60,7 +60,7 @@ int main(void) {
     return 0;
   }
 
-  ret = bme280_initialize_device();
+  ret = sensor_initialize();
   if (ret < 0) {
     LOG_ERR("bme280 failed to initialize");
     return 0;

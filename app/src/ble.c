@@ -1,5 +1,5 @@
 #include "ble.h"
-#include "bme280.h"
+#include "sensors.h"
 
 #include <zephyr/bluetooth/bluetooth.h>
 #include <zephyr/bluetooth/conn.h>
@@ -15,7 +15,7 @@ LOG_MODULE_REGISTER(nrf52dk_eo_ble);
 #define DEVICE_NAME_LEN (sizeof(DEVICE_NAME) - 1)
 
 // BLE service e177af9e-e1f0-4f65-8206-29507e994416
-#define BT_UUID_CUSTOM_SERVICE_VAL \
+#define BT_UUID_CUSTOM_SERVICE_VAL                                             \
   BT_UUID_128_ENCODE(0xe177af9e, 0xe1f0, 0x4f65, 0x8206, 0x29507e994416)
 
 static struct bt_uuid_128 service_uuid =
@@ -29,12 +29,10 @@ static struct bt_uuid_128 characteristic_uuid = BT_UUID_INIT_128(
 static uint8_t sensor_values[6] = {0, 0, 0, 0, 0, 0};
 static const struct bt_gatt_attr *tx_attr;
 
-static void ccc_cfg_changed(const struct bt_gatt_attr *attr, uint16_t value)
-{
+static void ccc_cfg_changed(const struct bt_gatt_attr *attr, uint16_t value) {
   ARG_UNUSED(attr);
 
-  switch (value)
-  {
+  switch (value) {
   case BT_GATT_CCC_NOTIFY:
     LOG_DBG("CMD RX/TX CCCD subscribed");
     break;
@@ -49,15 +47,14 @@ static void ccc_cfg_changed(const struct bt_gatt_attr *attr, uint16_t value)
   }
 }
 
-static bool sensor_values_updated(void)
-{
+static bool sensor_values_updated(void) {
   uint8_t current_buffer[6];
   int16_t temp;
   uint16_t humid, press;
 
-  temp = bme280_get_temperature();
-  press = bme280_get_pressure();
-  humid = bme280_get_humidity();
+  temp = sensor_get_temperature();
+  press = sensor_get_pressure();
+  humid = sensor_get_humidity();
 
   current_buffer[0] = temp & 0xFF;
   current_buffer[1] = temp >> 8;
@@ -66,8 +63,7 @@ static bool sensor_values_updated(void)
   current_buffer[4] = humid & 0xFF;
   current_buffer[5] = humid >> 8;
 
-  if (memcmp(sensor_values, current_buffer, sizeof(current_buffer)) != 0)
-  {
+  if (memcmp(sensor_values, current_buffer, sizeof(current_buffer)) != 0) {
     memcpy(sensor_values, current_buffer, sizeof(current_buffer));
     return true;
   }
@@ -77,10 +73,8 @@ static bool sensor_values_updated(void)
 
 static ssize_t read_characteristic(struct bt_conn *conn,
                                    const struct bt_gatt_attr *attr, void *buf,
-                                   uint16_t len, uint16_t offset)
-{
-  if (sensor_values_updated())
-  {
+                                   uint16_t len, uint16_t offset) {
+  if (sensor_values_updated()) {
     // we should do something ?
   }
   const char *value = attr->user_data;
@@ -109,13 +103,11 @@ static const struct bt_data scan_data[] = {
             sizeof(CONFIG_BT_DEVICE_NAME) - 1),
 };
 
-static void bt_ready(int err)
-{
+static void bt_ready(int err) {
   int ret;
   LOG_INF("BT is ready");
 
-  if (err)
-  {
+  if (err) {
     LOG_ERR("ble not initialized %d", err);
     return;
   }
@@ -124,8 +116,7 @@ static void bt_ready(int err)
   ret = bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, advert_data,
                         ARRAY_SIZE(advert_data), scan_data,
                         ARRAY_SIZE(scan_data));
-  if (ret != 0)
-  {
+  if (ret != 0) {
     LOG_ERR("advertising failed to start %d", ret);
     return;
   }
@@ -133,13 +124,11 @@ static void bt_ready(int err)
   LOG_INF("advertising started");
 }
 
-static void connected(struct bt_conn *conn, uint8_t err)
-{
+static void connected(struct bt_conn *conn, uint8_t err) {
   char addr[BT_ADDR_LE_STR_LEN];
 
   bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
-  if (err)
-  {
+  if (err) {
     LOG_ERR("failed to connect to %s, err 0x%02x %s", addr, err,
             bt_hci_err_to_str(err));
     return;
@@ -148,8 +137,7 @@ static void connected(struct bt_conn *conn, uint8_t err)
   LOG_INF("connected to %s", addr);
 }
 
-static void disconnected(struct bt_conn *conn, uint8_t reason)
-{
+static void disconnected(struct bt_conn *conn, uint8_t reason) {
   char addr[BT_ADDR_LE_STR_LEN];
 
   bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
@@ -163,16 +151,14 @@ BT_CONN_CB_DEFINE(conn_callbacks) = {
     .disconnected = disconnected,
 };
 
-static void nus_notif_enabled(bool enabled, void *ctx)
-{
+static void nus_notif_enabled(bool enabled, void *ctx) {
   ARG_UNUSED(ctx);
 
   LOG_INF("nus notification - %s", (enabled ? "enabled" : "disabled"));
 }
 
 static void nus_received(struct bt_conn *conn, const void *data, uint16_t len,
-                         void *ctx)
-{
+                         void *ctx) {
   ARG_UNUSED(ctx);
 
   int ret;
@@ -180,8 +166,7 @@ static void nus_received(struct bt_conn *conn, const void *data, uint16_t len,
   LOG_INF("nus received - Len: %d, Message: %s", len, (char *)data);
 
   ret = bt_nus_send(conn, (char *)data, len);
-  if (ret)
-  {
+  if (ret) {
     LOG_ERR("failed to send NUS %d", ret);
   }
 }
@@ -191,46 +176,39 @@ struct bt_nus_cb nus_listener = {
     .received = nus_received,
 };
 
-bool can_notify(struct bt_conn *conn)
-{
+bool can_notify(struct bt_conn *conn) {
   return bt_gatt_is_subscribed(conn, tx_attr, BT_GATT_CCC_NOTIFY);
 }
 
-bool can_indicate(struct bt_conn *conn)
-{
+bool can_indicate(struct bt_conn *conn) {
   return bt_gatt_is_subscribed(conn, tx_attr, BT_GATT_CCC_INDICATE);
 }
 
-int nus_tx_notify(struct bt_conn *conn, const void *data, uint16_t len)
-{
-  if (!can_notify(conn))
-  {
+int nus_tx_notify(struct bt_conn *conn, const void *data, uint16_t len) {
+  if (!can_notify(conn)) {
     LOG_WRN("Peer not subscribed for NOTIFY");
     return -ENOTCONN;
   }
   return bt_gatt_notify(conn, tx_attr, data, len);
 }
 
-int ble_notify(void)
-{
+int ble_notify(void) {
   int ret;
 
   ret = 0;
-  if (sensor_values_updated())
-  {
+  if (sensor_values_updated()) {
 
-    const struct bt_gatt_attr* service_attr = service.attrs;
-    ret = bt_gatt_notify(NULL, service_attr, sensor_values, sizeof(sensor_values));
-    if (ret != 0)
-    {
+    const struct bt_gatt_attr *service_attr = service.attrs;
+    ret = bt_gatt_notify(NULL, service_attr, sensor_values,
+                         sizeof(sensor_values));
+    if (ret != 0) {
       LOG_ERR("notify failed %d", ret);
     }
   }
   return ret;
 }
 
-int ble_initialize(void)
-{
+int ble_initialize(void) {
   int ret;
 
   ret = bt_nus_cb_register(&nus_listener, NULL);
@@ -241,8 +219,7 @@ int ble_initialize(void)
   }
 
   ret = bt_enable(bt_ready);
-  if (ret != 0)
-  {
+  if (ret != 0) {
     LOG_ERR("ble initialization failure %d", ret);
     return -1;
   }

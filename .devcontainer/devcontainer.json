@@ -20,8 +20,8 @@
 	"mounts": [
 		{
 			"type":   "bind",
-			"source": "${localEnv:HOME}/.embedops",
-			"target": "/root/.embedops",
+			"source": "${localEnv:HOME}${localEnv:USERPROFILE}/.embedops",
+			"target": "/home/${localEnv:USER}/.embedops",
 		},
 	],
 	"initializeCommand": "mkdir -p ~/.embedops",

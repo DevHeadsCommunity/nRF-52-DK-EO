@@ -87,7 +87,7 @@ uint16_t sensor_get_humidity(void) {
     return (uint16_t)-1;
   }
 
-  ret = sensor_channel_get(press_sensor, SENSOR_CHAN_PRESS, &humid);
+  ret = sensor_channel_get(temp_sensor, SENSOR_CHAN_HUMIDITY, &humid);
   if (ret != 0) {
     LOG_ERR("get humidity failed");
     return (int16_t)-1;

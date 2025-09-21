@@ -13,4 +13,4 @@ target_sources(app PRIVATE ${app_sources})
 
 # add_subdirectory(tests)
 
-set(BOARD nrf52dk_nrf52832 CACHE STRING "Board to build for")
+# set(BOARD nrf52dk_nrf52832 CACHE STRING "Board to build for")

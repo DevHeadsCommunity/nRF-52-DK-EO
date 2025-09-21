@@ -1,6 +1,8 @@
 common:
   tags: conversions sensor
   harness: ztest
+  platform_allow:
+    - qemu_x86
 
 tests:
   nrf52dk_eo_testsuite.suite: {}

@@ -35,3 +35,4 @@ CMakeFiles
 CMakeCache.txt
 
 .vscode
+twister-out*

@@ -1,0 +1,6 @@
+common:
+  tags: conversions sensor
+  harness: ztest
+
+tests:
+  nrf52dk_eo_testsuite.suite: {}

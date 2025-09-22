@@ -10,5 +10,5 @@
         aliases {
                 lps22hbpress = &lps22hb_press;
                 hts221 = &hts221;
-        }
+        };
 };

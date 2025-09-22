@@ -31,7 +31,6 @@ bootloader
 #EmbedOps
 manifest-repo
 CMakeFiles
-.github
 CMakeCache.txt
 
 .vscode

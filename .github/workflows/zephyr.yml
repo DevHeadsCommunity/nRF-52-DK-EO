@@ -1,0 +1,37 @@
+name: zephyr
+
+on: 
+  push:
+
+jobs:
+  zephyr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (GitHub)
+        uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          # driver type required for Github Actions Docker Layer Caching
+          driver: docker-container
+      - name: Pre-build image and run make ci-build in dev container
+        uses: devcontainers/ci@v0.3
+        # uncomment the next section to enable reporting
+        # env:
+        #   EMBEDOPS_API_REPO_KEY: ${{ secrets.EMBEDOPS_API_REPO_KEY }}
+        #   GITHUB_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        with:
+          inheritEnv: true
+          # use GitHub Actions caching
+          cacheFrom: type=gha
+          cacheTo: type=gha,mode=min
+          # Image gets built every time and does not use previously existing image.
+          # No need to push it anywhere. Better performance when built layers are cached
+          push: never
+          runCmd: ci/zephyr.sh
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build artifacts
+          # set path to build directory
+          path: build

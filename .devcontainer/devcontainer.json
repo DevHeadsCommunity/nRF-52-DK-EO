@@ -13,7 +13,9 @@
 			"userUid":              "automatic",
 			"userGid":              "automatic",
 		},
-		"ghcr.io/dojofive/embedops-features/zephyr-dev:latest":            {},
+		"ghcr.io/dojofive/embedops-features/zephyr-dev:latest": {
+			"zephyr-toolchain": "i586-zephyr-elf arm-zephyr-eabi riscv64-zephyr-elf"
+		},
 		"ghcr.io/dojofive/embedops-features/arm-none-eabi-gcc-dev:latest": {},
 	},
 	"remoteUser": "${localEnv:USER}",

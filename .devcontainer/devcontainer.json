@@ -13,10 +13,9 @@
 			"userUid":              "automatic",
 			"userGid":              "automatic",
 		},
-		"ghcr.io/dojofive/embedops-features/zephyr-dev:latest": {
-			"zephyr-toolchain": "i586-zephyr-elf arm-zephyr-eabi riscv64-zephyr-elf"
-		},
-		"ghcr.io/dojofive/embedops-features/arm-none-eabi-gcc-dev:latest": {},
+		"ghcr.io/dojofive/embedops-features/zephyr-dev:latest":            {},
+		"ghcr.io/dojofive/embedops-features/ceedling:latest": {"code-coverage": true},
+		"ghcr.io/dojofive/embedops-features/gcc:latest":      {},
 	},
 	"remoteUser": "${localEnv:USER}",
 	"mounts": [
@@ -53,5 +52,7 @@
 			],
 		},
 	},
+	"postStartCommand": "/bin/bash -c 'source /etc/profile.d/gcovr.sh || echo \"Warning: Unable to source gcovr.sh\"'",
+
 	"image": "ubuntu:24.04",
 }

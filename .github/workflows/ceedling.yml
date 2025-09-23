@@ -1,0 +1,27 @@
+name: ceedling
+
+on:
+  push: null
+jobs:
+  ceedling:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (GitHub)
+        uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+      - name: Pre-build image and run make ci-build in dev container
+        uses: devcontainers/ci@v0.3
+        with:
+          inheritEnv: true
+          cacheFrom: type=gha
+          cacheTo: type=gha,mode=min
+          push: never
+          runCmd: ci/ceedling.sh
+      - name: Archive test artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: test artifacts
+          path: build_test

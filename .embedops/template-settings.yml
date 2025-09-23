@@ -1,4 +1,8 @@
 build_command: west build -b thingy52/nrf52832 -p
+code_coverage: "Yes"
 devcontainer: ubuntu
 pipeline_provider: gitlab
+sourceDirectory: app
 target_platform: D5_NRF5340_HIL_KIT
+testDirectory: app/tests
+testType: ceedling

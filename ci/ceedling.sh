@@ -38,10 +38,10 @@ gcovr -r . --lcov -o $PROJECT_ROOT/coverage.lcov
 # uncomment the section below once Repo Variable EMBEDOPS_API_REPO_KEY is set.
 # If you have access, this key can be found at https://app.embedops.io/app/manage/repos/<Embedops Repo UUID>
 
-# if [ "$CI" = "true" ]; then
-#    # do not fail if error reporting
-#    set +e
-#    eo report unittest report.xml
-#    eo report coverage coverage.lcov
-#    set -e
-# fi
+if [ "$CI" = "true" ]; then
+   # do not fail if error reporting
+   set +e
+   eo report unittest report.xml
+   eo report coverage coverage.lcov
+   set -e
+fi

@@ -54,7 +54,7 @@ int16_t sensor_get_temperature(void) {
     return (int16_t)-1;
   }
 
-  return sensor_value_to_temperature(temp);
+  return sensor_value_to_temperature(&temp);
 #else
   return bme280_get_temperature();
 #endif
@@ -74,7 +74,7 @@ uint32_t sensor_get_pressure(void) {
     return (int16_t)-1;
   }
 
-  return sensor_value_to_pressure(press);
+  return sensor_value_to_pressure(&press);
 #else
   return bme280_get_pressure();
 #endif
@@ -93,7 +93,7 @@ uint16_t sensor_get_humidity(void) {
     return (int16_t)-1;
   }
 
-  return sensor_value_to_humidity(humid);
+  return sensor_value_to_humidity(&humid);
 #else
   return bme280_get_humidity();
 #endif

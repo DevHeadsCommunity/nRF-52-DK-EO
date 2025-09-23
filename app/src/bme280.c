@@ -44,7 +44,7 @@ int16_t bme280_get_temperature(void) {
     LOG_ERR("get temperature failed (%d)", ret);
     return -1;
   }
-  return sensor_value_to_temperature(t);
+  return sensor_value_to_temperature(&t);
 }
 
 uint32_t bme280_get_pressure(void) {
@@ -60,7 +60,7 @@ uint32_t bme280_get_pressure(void) {
     return (uint32_t)-1;
   }
 
-  return sensor_value_to_pressure(p);
+  return sensor_value_to_pressure(&p);
 }
 
 /* Return humidity in centi-%RH (e.g., 4567 => 45.67%) */
@@ -77,5 +77,5 @@ uint16_t bme280_get_humidity(void) {
     return (uint16_t)-1;
   }
 
-  return sensor_value_to_humidity(h);
+  return sensor_value_to_humidity(&h);
 }

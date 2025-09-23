@@ -14,6 +14,9 @@ jobs:
           driver: docker-container
       - name: Pre-build image and run make ci-build in dev container
         uses: devcontainers/ci@v0.3
+        env:
+          EMBEDOPS_API_REPO_KEY: ${{ secrets.EMBEDOPS_API_REPO_KEY }}
+          GITHUB_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         with:
           inheritEnv: true
           cacheFrom: type=gha
